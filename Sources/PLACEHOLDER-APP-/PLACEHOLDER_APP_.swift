@@ -1,9 +1,10 @@
-// The Swift Programming Language
-// https://docs.swift.org/swift-book
+import SwiftUI
 
 @main
-struct PLACEHOLDER_APP_ {
-    static func main() {
-        print("Hello, world!")
+struct PLACEHOLDER_APP: App {
+    var body: some Scene {
+        WindowGroup {
+            LandingView()
+        }
     }
 }
