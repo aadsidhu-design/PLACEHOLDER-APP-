@@ -4,12 +4,22 @@ class GoogleAIService {
     static let shared = GoogleAIService()
     
     // MARK: - Configuration
-    private let apiKey = ProcessInfo.processInfo.environment["GOOGLE_AI_API_KEY"] ?? ""
+    private let apiKey = SecureConfig.googleAIKey
     private let baseURL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent"
+    
+    init() {
+        if !SecureConfig.validateConfiguration() {
+            print("⚠️ GoogleAIService: Configuration validation failed")
+        }
+    }
     
     // MARK: - AI Idea Generation
     
     func generateBusinessIdeas(from quizResponse: QuizResponse, userProfile: User) async throws -> [BusinessIdea] {
+        guard !apiKey.isEmpty else {
+            throw AIServiceError.configurationMissing("Google AI API key not configured")
+        }
+        
         let profileDescription = formatProfileForPrompt(quizResponse, userProfile)
         let prompt = buildIdeaGenerationPrompt(profileDescription)
         
@@ -20,6 +30,7 @@ class GoogleAIService {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = jsonData
+        request.timeoutInterval = 30
         
         let (data, response) = try await URLSession.shared.data(for: request)
         
@@ -170,9 +181,25 @@ struct PartResponse: Decodable {
     let text: String?
 }
 
-enum AIServiceError: Error {
+enum AIServiceError: Error, LocalizedError {
     case invalidResponse
     case noValidResponse
     case decodingError
     case networkError
+    case configurationMissing(String)
+    
+    var errorDescription: String? {
+        switch self {
+        case .invalidResponse:
+            return "Invalid response from AI service"
+        case .noValidResponse:
+            return "No valid response from AI"
+        case .decodingError:
+            return "Failed to decode AI response"
+        case .networkError:
+            return "Network error while calling AI service"
+        case .configurationMissing(let reason):
+            return "Configuration error: \(reason)"
+        }
+    }
 }
