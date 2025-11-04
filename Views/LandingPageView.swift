@@ -2,201 +2,372 @@ import SwiftUI
 
 struct LandingPageView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
-    @State private var showSignUp = false
     
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(spacing: 40) {
+                VStack(spacing: 0) {
                     // Hero Section
-                    VStack(spacing: 16) {
-                        Image(systemName: "lightbulb.max.fill")
-                            .font(.system(size: 60))
-                            .foregroundColor(.blue)
-                        
-                        Text("Find Your Perfect Business Idea")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
+                    VStack(spacing: AppSpacing.lg) {
+                        VStack(spacing: AppSpacing.lg) {
+                            ZStack {
+                                Circle()
+                                    .fill(
+                                        LinearGradient(
+                                            gradient: Gradient(colors: [AppColors.primary, AppColors.accent]),
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
+                                    .frame(width: 80, height: 80)
+                                
+                                Image(systemName: "lightbulb.max.fill")
+                                    .font(.system(size: 40))
+                                    .foregroundColor(.white)
+                            }
+                            
+                            VStack(spacing: AppSpacing.md) {
+                                Text("Find Your Perfect")
+                                    .font(AppTypography.largeTitle)
+                                    .fontWeight(.bold)
+                                + Text(" Business")
+                                    .font(AppTypography.largeTitle)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(AppColors.primary)
+                                
+                                Text("Personalized business ideas powered by AI")
+                                    .font(AppTypography.body)
+                                    .foregroundColor(AppColors.textSecondary)
+                            }
                             .multilineTextAlignment(.center)
-                        
-                        Text("Personalized business ideas based on your skills, interests, and personality")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                            .multilineTextAlignment(.center)
+                        }
+                        .padding(AppSpacing.xl)
                     }
-                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                AppColors.primary.opacity(0.05),
+                                AppColors.accent.opacity(0.05)
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
                     
                     // Features Section
-                    VStack(spacing: 16) {
-                        FeatureRow(icon: "questionmark.circle", title: "Smart Quiz", description: "Answer quick questions about your background")
-                        FeatureRow(icon: "sparkles", title: "AI-Powered Ideas", description: "Get personalized business ideas instantly")
-                        FeatureRow(icon: "calendar", title: "Action Plan", description: "30-day plans and milestones to get started")
-                        FeatureRow(icon: "checkmark.circle", title: "Track Progress", description: "Monitor goals and milestones along the way")
+                    VStack(spacing: AppSpacing.lg) {
+                        Text("Why Choose Us?")
+                            .font(AppTypography.title2)
+                            .fontWeight(.bold)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        VStack(spacing: AppSpacing.lg) {
+                            FeatureCard(
+                                icon: "questionmark.circle",
+                                title: "Smart Quiz",
+                                description: "Quick assessment of your skills"
+                            )
+                            
+                            FeatureCard(
+                                icon: "sparkles",
+                                title: "AI-Powered",
+                                description: "Personalized ideas instantly"
+                            )
+                            
+                            FeatureCard(
+                                icon: "chart.line.uptrend.xyaxis",
+                                title: "Track Progress",
+                                description: "Monitor goals seamlessly"
+                            )
+                            
+                            FeatureCard(
+                                icon: "checkmark.circle",
+                                title: "Action Plans",
+                                description: "30-day plans to start"
+                            )
+                        }
                     }
-                    .padding()
+                    .padding(AppSpacing.xl)
                     
-                    // CTA Buttons
-                    VStack(spacing: 12) {
+                    // CTA Section
+                    VStack(spacing: AppSpacing.md) {
                         NavigationLink(destination: SignUpView()) {
-                            Text("Get Started")
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.blue)
-                                .foregroundColor(.white)
-                                .cornerRadius(8)
+                            HStack {
+                                Text("Get Started")
+                                Image(systemName: "arrow.right")
+                            }
+                            .applyButtonStyle()
                         }
                         
                         NavigationLink(destination: SignInView()) {
-                            Text("Sign In")
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color(.systemGray6))
-                                .foregroundColor(.blue)
-                                .cornerRadius(8)
+                            Text("Already have an account? Sign In")
+                                .applySecondaryButtonStyle()
                         }
                     }
-                    .padding()
+                    .padding(AppSpacing.xl)
                 }
             }
-            .navigationTitle("Welcome")
+            .background(AppColors.background)
+            .navigationBarHidden(true)
         }
     }
 }
 
-struct FeatureRow: View {
+struct FeatureCard: View {
     let icon: String
     let title: String
     let description: String
     
     var body: some View {
-        HStack(spacing: 16) {
-            Image(systemName: icon)
-                .font(.system(size: 24))
-                .foregroundColor(.blue)
-                .frame(width: 40)
+        HStack(spacing: AppSpacing.lg) {
+            ZStack {
+                Circle()
+                    .fill(AppColors.primary.opacity(0.1))
+                    .frame(width: 50, height: 50)
+                
+                Image(systemName: icon)
+                    .font(.system(size: 24))
+                    .foregroundColor(AppColors.primary)
+            }
             
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
                 Text(title)
-                    .font(.headline)
+                    .font(AppTypography.headline)
+                    .fontWeight(.semibold)
+                
                 Text(description)
-                    .font(.caption)
-                    .foregroundColor(.gray)
+                    .font(AppTypography.caption)
+                    .foregroundColor(AppColors.textSecondary)
             }
             
             Spacer()
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(8)
+        .applyCardStyle()
     }
 }
 
 struct SignUpView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
-    @Environment(\.presentationMode) var presentationMode
+    @State private var agreedToTerms = false
+    
+    var isFormValid: Bool {
+        !authViewModel.displayName.isEmpty &&
+        !authViewModel.email.isEmpty &&
+        !authViewModel.password.isEmpty &&
+        agreedToTerms
+    }
     
     var body: some View {
-        VStack(spacing: 20) {
-            Text("Create Account")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-            
-            VStack(spacing: 12) {
-                TextField("Full Name", text: $authViewModel.displayName)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+        VStack(spacing: AppSpacing.lg) {
+            VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                Text("Create Account")
+                    .font(AppTypography.title2)
+                    .fontWeight(.bold)
                 
-                TextField("Email", text: $authViewModel.email)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .keyboardType(.emailAddress)
-                    .autocapitalization(.none)
-                
-                SecureField("Password", text: $authViewModel.password)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                Text("Start your journey")
+                    .font(AppTypography.body)
+                    .foregroundColor(AppColors.textSecondary)
             }
-            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(AppSpacing.lg)
+            
+            VStack(spacing: AppSpacing.md) {
+                ModernTextField(
+                    placeholder: "Full Name",
+                    text: $authViewModel.displayName,
+                    icon: "person"
+                )
+                
+                ModernTextField(
+                    placeholder: "Email",
+                    text: $authViewModel.email,
+                    icon: "envelope",
+                    keyboardType: .emailAddress
+                )
+                
+                ModernSecureField(
+                    placeholder: "Password",
+                    text: $authViewModel.password,
+                    icon: "lock"
+                )
+                
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: agreedToTerms ? "checkmark.square.fill" : "square")
+                        .foregroundColor(agreedToTerms ? AppColors.primary : AppColors.border)
+                        .onTapGesture { agreedToTerms.toggle() }
+                    
+                    Text("I agree to Terms")
+                        .font(AppTypography.caption)
+                        .foregroundColor(AppColors.textSecondary)
+                    Spacer()
+                }
+                .padding(AppSpacing.md)
+                .background(AppColors.surface)
+                .cornerRadius(AppRadius.lg)
+            }
+            .padding(AppSpacing.lg)
             
             if let error = authViewModel.errorMessage {
                 Text(error)
-                    .foregroundColor(.red)
-                    .font(.caption)
-                    .padding()
+                    .font(AppTypography.caption)
+                    .foregroundColor(AppColors.danger)
+                    .padding(AppSpacing.md)
+                    .frame(maxWidth: .infinity)
+                    .background(AppColors.danger.opacity(0.1))
+                    .cornerRadius(AppRadius.lg)
+                    .padding(.horizontal, AppSpacing.lg)
             }
             
             Button(action: {
-                Task {
-                    await authViewModel.signUp()
-                }
+                Task { await authViewModel.signUp() }
             }) {
                 if authViewModel.isLoading {
-                    ProgressView()
+                    ProgressView().frame(maxWidth: .infinity)
                 } else {
-                    Text("Sign Up")
+                    Text("Create Account")
                 }
             }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(authViewModel.isLoading ? Color.gray : Color.blue)
-            .foregroundColor(.white)
-            .cornerRadius(8)
-            .disabled(authViewModel.isLoading)
+            .applyButtonStyle()
+            .disabled(authViewModel.isLoading || !isFormValid)
+            .padding(AppSpacing.lg)
             
             Spacer()
         }
-        .padding()
+        .background(AppColors.background)
         .navigationBarTitleDisplayMode(.inline)
     }
 }
 
 struct SignInView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
-    @Environment(\.presentationMode) var presentationMode
+    
+    var isFormValid: Bool {
+        !authViewModel.email.isEmpty &&
+        !authViewModel.password.isEmpty
+    }
     
     var body: some View {
-        VStack(spacing: 20) {
-            Text("Sign In")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-            
-            VStack(spacing: 12) {
-                TextField("Email", text: $authViewModel.email)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .keyboardType(.emailAddress)
-                    .autocapitalization(.none)
+        VStack(spacing: AppSpacing.lg) {
+            VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                Text("Welcome Back")
+                    .font(AppTypography.title2)
+                    .fontWeight(.bold)
                 
-                SecureField("Password", text: $authViewModel.password)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                Text("Continue your journey")
+                    .font(AppTypography.body)
+                    .foregroundColor(AppColors.textSecondary)
             }
-            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(AppSpacing.lg)
+            
+            VStack(spacing: AppSpacing.md) {
+                ModernTextField(
+                    placeholder: "Email",
+                    text: $authViewModel.email,
+                    icon: "envelope",
+                    keyboardType: .emailAddress
+                )
+                
+                ModernSecureField(
+                    placeholder: "Password",
+                    text: $authViewModel.password,
+                    icon: "lock"
+                )
+            }
+            .padding(AppSpacing.lg)
             
             if let error = authViewModel.errorMessage {
                 Text(error)
-                    .foregroundColor(.red)
-                    .font(.caption)
-                    .padding()
+                    .font(AppTypography.caption)
+                    .foregroundColor(AppColors.danger)
+                    .padding(AppSpacing.md)
+                    .frame(maxWidth: .infinity)
+                    .background(AppColors.danger.opacity(0.1))
+                    .cornerRadius(AppRadius.lg)
+                    .padding(.horizontal, AppSpacing.lg)
             }
             
             Button(action: {
-                Task {
-                    await authViewModel.signIn()
-                }
+                Task { await authViewModel.signIn() }
             }) {
                 if authViewModel.isLoading {
-                    ProgressView()
+                    ProgressView().frame(maxWidth: .infinity)
                 } else {
                     Text("Sign In")
                 }
             }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(authViewModel.isLoading ? Color.gray : Color.blue)
-            .foregroundColor(.white)
-            .cornerRadius(8)
-            .disabled(authViewModel.isLoading)
+            .applyButtonStyle()
+            .disabled(authViewModel.isLoading || !isFormValid)
+            .padding(AppSpacing.lg)
             
             Spacer()
         }
-        .padding()
+        .background(AppColors.background)
         .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+struct ModernTextField: View {
+    let placeholder: String
+    @Binding var text: String
+    let icon: String
+    var keyboardType: UIKeyboardType = .default
+    
+    var body: some View {
+        HStack(spacing: AppSpacing.md) {
+            Image(systemName: icon)
+                .foregroundColor(AppColors.primary)
+                .frame(width: 20)
+            
+            TextField(placeholder, text: $text)
+                .font(AppTypography.body)
+                .keyboardType(keyboardType)
+                .autocapitalization(.none)
+        }
+        .padding(AppSpacing.md)
+        .background(AppColors.surface)
+        .cornerRadius(AppRadius.lg)
+        .overlay(
+            RoundedRectangle(cornerRadius: AppRadius.lg)
+                .stroke(AppColors.border, lineWidth: 1)
+        )
+    }
+}
+
+struct ModernSecureField: View {
+    let placeholder: String
+    @Binding var text: String
+    let icon: String
+    @State private var isSecureFieldVisible = false
+    
+    var body: some View {
+        HStack(spacing: AppSpacing.md) {
+            Image(systemName: icon)
+                .foregroundColor(AppColors.primary)
+                .frame(width: 20)
+            
+            if isSecureFieldVisible {
+                TextField(placeholder, text: $text)
+                    .font(AppTypography.body)
+                    .autocapitalization(.none)
+            } else {
+                SecureField(placeholder, text: $text)
+                    .font(AppTypography.body)
+            }
+            
+            Button(action: { isSecureFieldVisible.toggle() }) {
+                Image(systemName: isSecureFieldVisible ? "eye.slash" : "eye")
+                    .foregroundColor(AppColors.textSecondary)
+            }
+        }
+        .padding(AppSpacing.md)
+        .background(AppColors.surface)
+        .cornerRadius(AppRadius.lg)
+        .overlay(
+            RoundedRectangle(cornerRadius: AppRadius.lg)
+                .stroke(AppColors.border, lineWidth: 1)
+        )
     }
 }
 
