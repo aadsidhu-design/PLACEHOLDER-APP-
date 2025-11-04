@@ -1,8 +1,44 @@
+# Xcode
 .DS_Store
-/.build
-/Packages
+*.pbxuser
+*.perspectivev3
+*.xcworkspace/xcuserdata/
+*.xcworkspace/xcshareddata/
 xcuserdata/
+*.xcodeproj/xcuserdata/
 DerivedData/
-.swiftpm/configuration/registries.json
-.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
-.netrc
+*.hmap
+*.ipa
+*.dsym/
+
+# Swift
+.swiftpm/
+Package.resolved
+*.swiftmodule
+*.swiftdoc
+
+# Pods
+Pods/
+Podfile.lock
+
+# Environment
+.env
+.env.local
+*.plist.local
+GoogleService-Info.plist
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+.vscode/
+
+# OS
+Thumbs.db
+.cache/
+
+# Sensitive
+*.key
+*.p8
+*.p12
