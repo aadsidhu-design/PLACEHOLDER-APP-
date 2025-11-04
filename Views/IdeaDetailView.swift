@@ -2,196 +2,236 @@ import SwiftUI
 
 struct IdeaDetailView: View {
     let idea: BusinessIdea
-    @EnvironmentObject var goalViewModel: GoalViewModel
-    @State private var showAddGoal = false
+    @Environment(\.dismiss) var dismiss
+    @State private var isFavorited = false
+    @State private var showActionSheet = false
     
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                // Title and Summary
-                VStack(alignment: .leading, spacing: 12) {
-                    Text(idea.title)
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                    
-                    Text(idea.summary)
-                        .font(.body)
-                        .foregroundColor(.gray)
-                }
-                .padding()
-                
-                // Quick Stats
-                HStack(spacing: 16) {
-                    StatCard(label: "Timeline", value: "\(idea.roughTimelineWeeks)w")
-                    StatCard(label: "Budget", value: idea.estimatedStartupCostRange)
-                    StatCard(label: "Skills", value: "\(idea.requiredSkills.count)")
-                }
-                .padding()
-                
-                Divider()
-                
-                // Detailed Description
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("About This Idea")
-                        .font(.headline)
-                    
-                    Text(idea.detailedDescription)
-                        .font(.body)
-                        .foregroundColor(.gray)
-                        .lineLimit(nil)
-                }
-                .padding()
-                
-                Divider()
-                
-                // Required Skills
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Required Skills")
-                        .font(.headline)
-                    
-                    FlowLayout(items: idea.requiredSkills) { skill in
-                        Text(skill)
-                            .font(.caption)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color.blue.opacity(0.1))
-                            .foregroundColor(.blue)
-                            .cornerRadius(16)
+        ZStack {
+            AppColors.background.ignoresSafeArea()
+            
+            ScrollView {
+                VStack(spacing: AppSpacing.lg) {
+                    // Hero Section
+                    ZStack(alignment: .topLeading) {
+                        LinearGradient(
+                            gradient: Gradient(colors: [AppColors.primary, AppColors.accent]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                        .frame(height: 200)
+                        
+                        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                            HStack {
+                                Button(action: { dismiss() }) {
+                                    Image(systemName: "chevron.left")
+                                        .font(.system(size: 18, weight: .semibold))
+                                        .foregroundColor(.white)
+                                }
+                                
+                                Spacer()
+                                
+                                Button(action: { isFavorited.toggle() }) {
+                                    Image(systemName: isFavorited ? "heart.fill" : "heart")
+                                        .font(.system(size: 18))
+                                        .foregroundColor(.white)
+                                }
+                            }
+                            
+                            VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                                Text(idea.category)
+                                    .font(AppTypography.caption)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.white.opacity(0.8))
+                                
+                                Text(idea.title)
+                                    .font(AppTypography.title1)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.white)
+                            }
+                            
+                            Spacer()
+                        }
+                        .padding(AppSpacing.lg)
                     }
-                }
-                .padding()
-                
-                Divider()
-                
-                // 30-Day Plan
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("First 30 Days")
-                        .font(.headline)
                     
-                    VStack(alignment: .leading, spacing: 8) {
-                        ForEach(idea.first30DayPlan.indices, id: \.self) { index in
-                            HStack(spacing: 12) {
-                                Text("\(index + 1)").fontWeight(.bold).foregroundColor(.blue)
-                                Text(idea.first30DayPlan[index]).font(.body)
+                    // Content
+                    VStack(spacing: AppSpacing.lg) {
+                        // Key Metrics
+                        HStack(spacing: AppSpacing.lg) {
+                            MetricCard(
+                                icon: "dollarsign.circle",
+                                title: "Budget",
+                                value: idea.estimatedBudget
+                            )
+                            
+                            MetricCard(
+                                icon: "calendar",
+                                title: "Timeline",
+                                value: idea.timeToMarket
+                            )
+                            
+                            let potentialColor = idea.marketPotential == "High" ? AppColors.success : (idea.marketPotential == "Medium" ? AppColors.warning : AppColors.primary)
+                            MetricCard(
+                                icon: "chart.line.uptrend.xyaxis",
+                                title: "Potential",
+                                value: idea.marketPotential,
+                                color: potentialColor
+                            )
+                        }
+                        .padding(AppSpacing.lg)
+                        
+                        // Description
+                        VStack(alignment: .leading, spacing: AppSpacing.md) {
+                            Text("Overview")
+                                .font(AppTypography.headline)
+                                .fontWeight(.semibold)
+                            
+                            Text(idea.details)
+                                .font(AppTypography.body)
+                                .foregroundColor(AppColors.text)
+                                .lineSpacing(2)
+                        }
+                        .applyCardStyle()
+                        
+                        // Action Plan
+                        VStack(alignment: .leading, spacing: AppSpacing.md) {
+                            Text("Quick Start")
+                                .font(AppTypography.headline)
+                                .fontWeight(.semibold)
+                            
+                            VStack(spacing: AppSpacing.md) {
+                                ActionStep(
+                                    number: 1,
+                                    title: "Research Market",
+                                    description: "Validate demand and identify competitors"
+                                )
+                                
+                                ActionStep(
+                                    number: 2,
+                                    title: "Develop MVP",
+                                    description: "Build a minimum viable product"
+                                )
+                                
+                                ActionStep(
+                                    number: 3,
+                                    title: "Get Feedback",
+                                    description: "Test with early customers"
+                                )
+                                
+                                ActionStep(
+                                    number: 4,
+                                    title: "Scale",
+                                    description: "Refine and launch to broader market"
+                                )
                             }
                         }
+                        .applyCardStyle()
+                        
+                        // CTA Buttons
+                        VStack(spacing: AppSpacing.md) {
+                            Button(action: { }) {
+                                HStack {
+                                    Image(systemName: "checkmark.circle")
+                                    Text("Start This Idea")
+                                }
+                                .applyButtonStyle()
+                            }
+                            
+                            Button(action: { showActionSheet = true }) {
+                                Text("View Details")
+                                    .applySecondaryButtonStyle()
+                            }
+                        }
+                        .padding(AppSpacing.lg)
                     }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
-                }
-                .padding()
-                
-                Divider()
-                
-                // Revenue Model
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Revenue Model")
-                        .font(.headline)
                     
-                    Text(idea.revenueModelHint)
-                        .font(.body)
-                        .foregroundColor(.gray)
-                        .lineLimit(nil)
+                    Spacer()
+                        .frame(height: AppSpacing.xl)
                 }
-                .padding()
-                
-                // Start Button
-                Button(action: { showAddGoal = true }) {
-                    Text("Create Your Plan")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
-                }
-                .padding()
             }
         }
-        .navigationTitle("Business Idea")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarHidden(true)
     }
 }
 
-struct StatCard: View {
-    let label: String
+// MARK: - Metric Card
+struct MetricCard: View {
+    let icon: String
+    let title: String
     let value: String
+    var color: Color = AppColors.primary
     
     var body: some View {
-        VStack(spacing: 8) {
-            Text(label)
-                .font(.caption)
-                .foregroundColor(.gray)
+        VStack(spacing: AppSpacing.sm) {
+            Image(systemName: icon)
+                .font(.system(size: 24))
+                .foregroundColor(color)
             
-            Text(value)
-                .font(.headline)
-                .fontWeight(.bold)
+            VStack(spacing: AppSpacing.xs) {
+                Text(value)
+                    .font(AppTypography.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(AppColors.text)
+                
+                Text(title)
+                    .font(AppTypography.caption2)
+                    .foregroundColor(AppColors.textSecondary)
+            }
         }
         .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(8)
+        .padding(AppSpacing.md)
+        .background(color.opacity(0.08))
+        .cornerRadius(AppRadius.lg)
     }
 }
 
-struct FlowLayout<T: Identifiable>: View where T: Hashable {
-    let items: [T]
-    let content: (T) -> AnyView
+// MARK: - Action Step
+struct ActionStep: View {
+    let number: Int
+    let title: String
+    let description: String
     
     var body: some View {
-        var width = CGFloat.zero
-        var height = CGFloat.zero
-        
-        return ZStack(alignment: .topLeading) {
-            ForEach(items, id: \.self) { item in
-                content(item)
-                    .alignmentGuide(.leading) { d in
-                        if abs(width - d.width) > 300 {
-                            width = 0
-                            height -= d.height
-                        }
-                        let result = width
-                        width -= d.width
-                        return result
-                    }
-                    .alignmentGuide(.top) { d in
-                        let result = height
-                        if abs(width) > 300 {
-                            height -= d.height
-                        }
-                        return result
-                    }
+        HStack(spacing: AppSpacing.md) {
+            // Step Number
+            ZStack {
+                Circle()
+                    .fill(AppColors.primary)
+                    .frame(width: 32, height: 32)
+                
+                Text(String(number))
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(.white)
             }
+            
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                Text(title)
+                    .font(AppTypography.headline)
+                    .fontWeight(.semibold)
+                
+                Text(description)
+                    .font(AppTypography.caption)
+                    .foregroundColor(AppColors.textSecondary)
+            }
+            
+            Spacer()
         }
-    }
-}
-
-extension FlowLayout where T == String {
-    init(items: [String], @ViewBuilder content: @escaping (String) -> some View) {
-        self.items = items.enumerated().map { ($0.offset, $0.element) }
-        self.content = { item in
-            AnyView(content(item.1))
-        }
+        .padding(AppSpacing.md)
+        .background(AppColors.surface)
+        .cornerRadius(AppRadius.lg)
     }
 }
 
 #Preview {
-    IdeaDetailView(
-        idea: BusinessIdea(
-            id: "1",
-            userId: "user1",
-            title: "SaaS Product",
-            summary: "A software-as-a-service product for small businesses",
-            detailedDescription: "This is a detailed description...",
-            requiredSkills: ["Software Development", "Product Design"],
-            roughTimelineWeeks: 12,
-            first30DayPlan: ["Validate idea", "Create prototype"],
-            revenueModelHint: "Monthly subscription",
-            estimatedStartupCostRange: "$2000-5000",
-            aiPromptUsed: nil,
-            tags: ["SaaS", "Tech"],
-            createdAt: Date()
-        )
-    )
-    .environmentObject(GoalViewModel())
+    IdeaDetailView(idea: BusinessIdea(
+        id: "1",
+        title: "AI Content Creator",
+        description: "Generate content",
+        category: "SaaS",
+        marketPotential: "High",
+        estimatedBudget: "$5k-$15k",
+        timeToMarket: "3-6 months",
+        details: "Details here"
+    ))
 }
